@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CoachStatus {
+  PENDING
+  APPROVED
+}
+
+enum Sport {
+  MUSCULATION
+  COURSE_A_PIED
+  YOGA
+  TENNIS
+  FOOTBALL
+  BASKETBALL
+  NATATION
+  BOXE
+  CROSSFIT
+  CYCLISME
+  PILATES
+  ARTS_MARTIAUX
+  DANSE
+  ESCALADE
+  AUTRE
+}
+
+enum MessageSender {
+  STUDENT
+  COACH
+}
+
+model Coach {
+  id            String        @id @default(cuid())
+  name          String
+  email         String        @unique
+  passwordHash  String?
+  phone         String?
+  bio           String
+  sports        Sport[]
+  customSport   String?
+  photoUrl      String?
+  videoUrl      String?
+  instagramUrl  String?
+  tiktokUrl     String?
+  youtubeUrl    String?
+  websiteUrl    String?
+  status        CoachStatus    @default(PENDING)
+  emailNotifications Boolean   @default(true)
+  createdAt     DateTime       @default(now())
+  conversations Conversation[]
+}
+
+model Student {
+  id                 String         @id @default(cuid())
+  name               String
+  email              String         @unique
+  passwordHash       String
+  emailNotifications Boolean        @default(true)
+  createdAt          DateTime       @default(now())
+  conversations      Conversation[]
+}
+
+model Conversation {
+  id             String    @id @default(cuid())
+  coach          Coach     @relation(fields: [coachId], references: [id], onDelete: Cascade)
+  coachId        String
+  student        Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId      String
+  notifyByEmail  Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  messages       Message[]
+
+  @@unique([coachId, studentId])
+  @@index([coachId])
+  @@index([studentId])
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+  sender         MessageSender
+  body           String
+  createdAt      DateTime      @default(now())
+
+  @@index([conversationId])
+}
