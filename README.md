@@ -153,11 +153,11 @@ docker compose up -d --build
 
 Cette commande construit l'image de l'app, démarre Postgres, applique
 automatiquement les migrations (service `migrate`), puis démarre l'app sur le
-port `3001` (modifiable dans `docker-compose.yml`). Les fichiers uploadés
+port `6767` (modifiable dans `docker-compose.yml`). Les fichiers uploadés
 (photos/vidéos de coach, photos de catégories) sont conservés dans le volume
 Docker `uploads-data`, qui survit aux redéploiements.
 
-4. Mettre un reverse proxy (Nginx, Caddy, Traefik...) devant le port `3001`
+4. Mettre un reverse proxy (Nginx, Caddy, Traefik...) devant le port `6767`
    pour exposer l'app en HTTPS sur votre domaine.
 5. Une fois le HTTPS en place, ajoutez `COOKIE_SECURE=true` dans `.env` et
    relancez `docker compose up -d --build` pour durcir les cookies de session
