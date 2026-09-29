@@ -32,7 +32,7 @@ export async function sendMail(options: { to: string; subject: string; text: str
 
   try {
     await client.sendMail({
-      from: process.env.SMTP_FROM || "Coachs Sportifs <no-reply@coachs-sportifs.local>",
+      from: process.env.SMTP_FROM || "Coachella <no-reply@coachella.local>",
       ...options,
     });
   } catch (err) {

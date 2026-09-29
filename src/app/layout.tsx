@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Coachs Sportifs",
-  description: "Trouvez un coach sportif près de chez vous",
+  title: "Coachella",
+  description: "Coachella — trouvez un coach sportif près de chez vous",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

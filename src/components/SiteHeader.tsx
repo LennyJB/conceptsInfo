@@ -12,7 +12,7 @@ export async function SiteHeader() {
       <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-4 md:px-10">
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
           <span className="inline-block h-2.5 w-2.5 rounded-full bg-brand" aria-hidden />
-          Coachs Sportifs
+          Coachella
         </Link>
         <nav className="flex items-center gap-5 text-sm">
           {loggedIn ? (

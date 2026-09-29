@@ -1,4 +1,4 @@
-# Coachs Sportifs
+# Coachella
 
 Annuaire de coachs sportifs : les coachs créent un profil (photo, vidéo courte,
 sport(s) pratiqué(s), réseaux sociaux), un administrateur valide chaque profil,
@@ -120,7 +120,7 @@ SMTP_PORT="587"
 SMTP_SECURE="false"   # "true" si le port utilise TLS implicite (souvent 465)
 SMTP_USER="..."
 SMTP_PASS="..."
-SMTP_FROM="Coachs Sportifs <no-reply@votredomaine.fr>"
+SMTP_FROM="Coachella <no-reply@votredomaine.fr>"
 ```
 
 Vous pouvez pointer `SMTP_HOST` vers n'importe quel serveur SMTP joignable
