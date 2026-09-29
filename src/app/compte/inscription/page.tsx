@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentCoach } from "@/lib/coach-auth";
 import { getCurrentStudent } from "@/lib/student-auth";
+import { getBrowsableCategories } from "@/lib/categories";
 import { inlineLinkClass, textLinkClass } from "@/lib/ui-styles";
 import { SignupForm } from "./SignupForm";
 
@@ -16,7 +17,11 @@ export default async function SignupPage(props: PageProps<"/compte/inscription">
   const defaultRole = searchParams.role === "coach" ? "coach" : "student";
   const suffix = `?redirect=${encodeURIComponent(redirectTo)}`;
 
-  const [coach, student] = await Promise.all([getCurrentCoach(), getCurrentStudent()]);
+  const [coach, student, categories] = await Promise.all([
+    getCurrentCoach(),
+    getCurrentStudent(),
+    getBrowsableCategories(),
+  ]);
   if (coach || student) redirect(redirectTo);
 
   return (
@@ -31,7 +36,7 @@ export default async function SignupPage(props: PageProps<"/compte/inscription">
         Que vous soyez coach ou élève, ça se passe ici.
       </p>
 
-      <SignupForm defaultRole={defaultRole} redirectTo={redirectTo} />
+      <SignupForm defaultRole={defaultRole} redirectTo={redirectTo} categories={categories} />
 
       <p className="mt-4 text-sm text-zinc-500">
         Déjà un compte ?{" "}

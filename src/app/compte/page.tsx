@@ -6,7 +6,8 @@ import { logout } from "@/lib/login-actions";
 import { toggleCoachEmailNotifications } from "@/lib/coach-actions";
 import { toggleStudentEmailNotifications } from "@/lib/student-actions";
 import { prisma } from "@/lib/prisma";
-import { SportTag } from "@/components/SportTag";
+import { CategoryTag } from "@/components/CategoryTag";
+import { ButtonLink } from "@/components/ui/Button";
 import { cardClass, inlineLinkClass, textLinkClass } from "@/lib/ui-styles";
 
 export const dynamic = "force-dynamic";
@@ -94,11 +95,14 @@ export default async function AccountPage() {
   if (!coach && !student) redirect("/compte/login");
 
   if (coach) {
-    const conversations = await prisma.conversation.findMany({
-      where: { coachId: coach.id },
-      orderBy: { createdAt: "desc" },
-      include: { student: true, messages: { orderBy: { createdAt: "desc" }, take: 1 } },
-    });
+    const [conversations, coachWithCategories] = await Promise.all([
+      prisma.conversation.findMany({
+        where: { coachId: coach.id },
+        orderBy: { createdAt: "desc" },
+        include: { student: true, messages: { orderBy: { createdAt: "desc" }, take: 1 } },
+      }),
+      prisma.coach.findUniqueOrThrow({ where: { id: coach.id }, include: { categories: true } }),
+    ]);
 
     return (
       <main className="mx-auto max-w-3xl px-6 py-16">
@@ -136,19 +140,24 @@ export default async function AccountPage() {
             )}
           </dl>
           <div className="mt-3 flex flex-wrap gap-2">
-            {coach.sports.map((sport) => (
-              <SportTag key={sport} sport={sport} customLabel={coach.customSport} />
+            {coachWithCategories.categories.map((category) => (
+              <CategoryTag key={category.id} category={category} />
             ))}
           </div>
         </div>
 
-        <form action={toggleCoachEmailNotifications} className="mt-4">
-          <button type="submit" className={`text-xs ${textLinkClass}`}>
-            {coach.emailNotifications
-              ? "🔔 Emails de notification activés"
-              : "🔕 Emails de notification désactivés"}
-          </button>
-        </form>
+        <div className="mt-4 flex flex-wrap items-center gap-4">
+          <ButtonLink href="/compte/profil" variant="secondary" size="sm">
+            Modifier mon profil
+          </ButtonLink>
+          <form action={toggleCoachEmailNotifications}>
+            <button type="submit" className={`text-xs ${textLinkClass}`}>
+              {coach.emailNotifications
+                ? "🔔 Emails de notification activés"
+                : "🔕 Emails de notification désactivés"}
+            </button>
+          </form>
+        </div>
 
         <h2 className="mt-10 text-lg font-medium">
           Messages ({conversations.length})

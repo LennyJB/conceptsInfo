@@ -1,14 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Coach } from "@prisma/client";
-import { SportTag } from "@/components/SportTag";
+import type { Category, Coach } from "@prisma/client";
+import { CategoryTag } from "@/components/CategoryTag";
 import { cardClass } from "@/lib/ui-styles";
 
 export function CoachList({
   coachs,
   emptyMessage,
 }: {
-  coachs: Coach[];
+  coachs: (Coach & { categories: Category[] })[];
   emptyMessage: React.ReactNode;
 }) {
   if (coachs.length === 0) {
@@ -42,8 +42,8 @@ export function CoachList({
                 {coach.bio}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                {coach.sports.map((sport) => (
-                  <SportTag key={sport} sport={sport} customLabel={coach.customSport} />
+                {coach.categories.map((category) => (
+                  <CategoryTag key={category.id} category={category} />
                 ))}
               </div>
             </div>

@@ -9,6 +9,7 @@ export default async function AllCoachsPage() {
   const coachs = await prisma.coach.findMany({
     where: { status: "APPROVED" },
     orderBy: { createdAt: "desc" },
+    include: { categories: true },
   });
 
   return (

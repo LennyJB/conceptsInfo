@@ -1,12 +1,13 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import type { Category } from "@prisma/client";
 import { createCoach, type CreateCoachState } from "@/lib/actions";
 import { studentSignup, type StudentAuthState } from "@/lib/student-actions";
-import { ALL_SPORTS, SPORT_LABELS } from "@/lib/sports";
 import { MAX_VIDEO_SECONDS } from "@/lib/upload-limits";
 import { PASSWORD_HINT } from "@/lib/password-policy";
-import { SportIcon } from "@/components/SportIcon";
+import { CategoryPicker } from "@/components/CategoryPicker";
+import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { errorBoxClass, inputClass } from "@/lib/ui-styles";
 
@@ -18,13 +19,14 @@ const initialCoachState: CreateCoachState = {};
 export function SignupForm({
   defaultRole,
   redirectTo,
+  categories,
 }: {
   defaultRole: Role;
   redirectTo: string;
+  categories: Category[];
 }) {
   const [role, setRole] = useState<Role>(defaultRole);
   const [videoError, setVideoError] = useState<string | null>(null);
-  const [selectedSports, setSelectedSports] = useState<string[]>([]);
 
   const [studentState, studentFormAction, studentPending] = useActionState(
     studentSignup,
@@ -128,52 +130,8 @@ export function SignupForm({
       {isCoach && (
         <>
           <fieldset className="flex flex-col gap-2">
-            <legend className="text-sm font-medium">Sport(s) coaché(s)</legend>
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-              {ALL_SPORTS.map((sport) => {
-                const checked = selectedSports.includes(sport);
-                return (
-                  <label
-                    key={sport}
-                    className={`flex cursor-pointer flex-col items-center gap-2 rounded-2xl border px-3.5 py-3 text-xs font-medium transition-colors ${
-                      checked
-                        ? "border-transparent bg-brand text-brand-foreground"
-                        : "border-black/[.08] text-zinc-600 hover:border-brand/40 hover:text-brand dark:border-white/[.145] dark:text-zinc-400"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      name="sports"
-                      value={sport}
-                      checked={checked}
-                      onChange={(e) => {
-                        setSelectedSports((prev) =>
-                          e.target.checked
-                            ? [...prev, sport]
-                            : prev.filter((s) => s !== sport)
-                        );
-                      }}
-                      className="sr-only"
-                    />
-                    <SportIcon sport={sport} size={28} />
-                    {SPORT_LABELS[sport]}
-                  </label>
-                );
-              })}
-            </div>
-            {selectedSports.includes("AUTRE") && (
-              <div className="mt-2">
-                <Field
-                  label="Précisez le sport pour la catégorie “Autre”"
-                  name="customSport"
-                  placeholder="Escrime, Squash, Aviron..."
-                  required
-                />
-                <p className="mt-1 text-xs text-zinc-500">
-                  Ce nom sera vérifié par un administrateur avant publication.
-                </p>
-              </div>
-            )}
+            <legend className="text-sm font-medium">Catégorie(s) coachée(s)</legend>
+            <CategoryPicker categories={categories} />
           </fieldset>
 
           <label className="flex flex-col gap-1.5">
@@ -254,35 +212,5 @@ export function SignupForm({
         </p>
       )}
     </form>
-  );
-}
-
-function Field({
-  label,
-  name,
-  type = "text",
-  placeholder,
-  required,
-  autoFocus,
-}: {
-  label: string;
-  name: string;
-  type?: string;
-  placeholder?: string;
-  required?: boolean;
-  autoFocus?: boolean;
-}) {
-  return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium">{label}</span>
-      <input
-        name={name}
-        type={type}
-        placeholder={placeholder}
-        required={required}
-        autoFocus={autoFocus}
-        className={inputClass}
-      />
-    </label>
   );
 }

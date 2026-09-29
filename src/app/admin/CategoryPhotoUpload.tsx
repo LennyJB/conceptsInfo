@@ -1,15 +1,14 @@
 "use client";
 
 import { useActionState } from "react";
-import type { Sport } from "@prisma/client";
 import { uploadCategoryPhoto, type UploadCategoryPhotoState } from "@/lib/admin-actions";
 import { Button } from "@/components/ui/Button";
 
 const initialState: UploadCategoryPhotoState = {};
 
-export function CategoryPhotoUpload({ sport }: { sport: Sport }) {
+export function CategoryPhotoUpload({ categoryId }: { categoryId: string }) {
   const [state, formAction, pending] = useActionState(
-    uploadCategoryPhoto.bind(null, sport),
+    uploadCategoryPhoto.bind(null, categoryId),
     initialState
   );
 

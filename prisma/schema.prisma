@@ -11,27 +11,26 @@ enum CoachStatus {
   APPROVED
 }
 
-enum Sport {
-  MUSCULATION
-  COURSE_A_PIED
-  YOGA
-  TENNIS
-  FOOTBALL
-  BASKETBALL
-  NATATION
-  BOXE
-  CROSSFIT
-  CYCLISME
-  PILATES
-  ARTS_MARTIAUX
-  DANSE
-  ESCALADE
-  AUTRE
+enum CategoryStatus {
+  PENDING
+  APPROVED
 }
 
 enum MessageSender {
   STUDENT
   COACH
+}
+
+model Category {
+  id        String         @id @default(cuid())
+  slug      String         @unique
+  label     String
+  color     String         @default("bg-gray-400")
+  iconUrl   String?
+  photoUrl  String?
+  status    CategoryStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+  coaches   Coach[]        @relation("CoachCategories")
 }
 
 model Coach {
@@ -41,8 +40,7 @@ model Coach {
   passwordHash  String?
   phone         String?
   bio           String
-  sports        Sport[]
-  customSport   String?
+  categories    Category[]    @relation("CoachCategories")
   photoUrl      String?
   videoUrl      String?
   instagramUrl  String?

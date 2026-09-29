@@ -1,25 +1,25 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { Sport } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { ALL_SPORTS, SPORT_LABELS } from "@/lib/sports";
-import { SportIcon } from "@/components/SportIcon";
+import { getCategoryBySlug } from "@/lib/categories";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import { CoachList } from "@/components/CoachList";
 import { inlineLinkClass, textLinkClass } from "@/lib/ui-styles";
 
 export const dynamic = "force-dynamic";
 
-export default async function SportPage(props: PageProps<"/sports/[sport]">) {
-  const { sport: sportParam } = await props.params;
+export default async function CategoryPage(props: PageProps<"/categories/[slug]">) {
+  const { slug } = await props.params;
 
-  if (!ALL_SPORTS.includes(sportParam as Sport)) {
+  const category = await getCategoryBySlug(slug);
+  if (!category || category.status !== "APPROVED") {
     notFound();
   }
-  const sport = sportParam as Sport;
 
   const coachs = await prisma.coach.findMany({
-    where: { status: "APPROVED", sports: { has: sport } },
+    where: { status: "APPROVED", categories: { some: { id: category.id } } },
     orderBy: { createdAt: "desc" },
+    include: { categories: true },
   });
 
   return (
@@ -29,9 +29,9 @@ export default async function SportPage(props: PageProps<"/sports/[sport]">) {
       </Link>
 
       <div className="mt-4 mb-8 flex items-center gap-3">
-        <SportIcon sport={sport} size={44} />
+        <CategoryIcon category={category} size={44} />
         <h1 className="text-3xl font-semibold tracking-tight">
-          {SPORT_LABELS[sport]}
+          {category.label}
         </h1>
       </div>
 

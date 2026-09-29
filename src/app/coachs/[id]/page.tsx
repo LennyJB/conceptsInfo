@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentStudent } from "@/lib/student-auth";
-import { SportTag } from "@/components/SportTag";
+import { CategoryTag } from "@/components/CategoryTag";
 import { ButtonLink } from "@/components/ui/Button";
 import { cardClass, textLinkClass } from "@/lib/ui-styles";
 import { ContactForm } from "./ContactForm";
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function CoachPage(props: PageProps<"/coachs/[id]">) {
   const { id } = await props.params;
   const [coach, student] = await Promise.all([
-    prisma.coach.findUnique({ where: { id } }),
+    prisma.coach.findUnique({ where: { id }, include: { categories: true } }),
     getCurrentStudent(),
   ]);
 
@@ -54,8 +54,8 @@ export default async function CoachPage(props: PageProps<"/coachs/[id]">) {
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        {coach.sports.map((sport) => (
-          <SportTag key={sport} sport={sport} customLabel={coach.customSport} />
+        {coach.categories.map((category) => (
+          <CategoryTag key={category.id} category={category} />
         ))}
       </div>
 

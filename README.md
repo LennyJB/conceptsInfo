@@ -35,11 +35,12 @@ Le schéma Prisma est dans [prisma/schema.prisma](prisma/schema.prisma). Après 
 npx prisma migrate dev --name <description>
 ```
 
-Les catégories de sport sont une liste fixe (enum `Sport`) définie dans le
-schéma et dans [src/lib/sports.ts](src/lib/sports.ts) (labels, icônes,
-couleurs). Pour ajouter un sport, ajoutez une valeur à l'enum `Sport`, son
-libellé/icône/couleur dans ce fichier, une icône SVG dans `public/sports/`,
-puis lancez une migration.
+Les catégories (sports) sont des entrées en base (modèle `Category`), pas une
+liste figée dans le code : un administrateur peut en créer, renommer ou
+supprimer depuis `/admin/categories`, avec une couleur et une photo optionnelle
+par catégorie. Les 14 catégories de départ ont été initialisées par la
+migration `20260929090000_dynamic_categories` avec leurs icônes SVG dans
+`public/sports/`.
 
 ### Photos et vidéos de profil
 
@@ -50,21 +51,24 @@ puis lancez une migration.
   taille de fichier reste le vrai garde-fou contre l'explosion du stockage).
 - Stockées dans `public/uploads/coaches/<id>/` (volume Docker en production).
 
-### Catégorie "Autre"
+### Proposer une nouvelle catégorie
 
-"Autre" n'est pas une vraie catégorie parcourable (elle n'apparaît jamais dans
-la grille de l'accueil ni sur `/sports/AUTRE`) : c'est le mécanisme par lequel
-un coach propose un nouveau sport en tapant librement son nom (ex: Escrime).
-Ce nom est modifiable par l'administrateur au moment où il valide le profil,
-puis affiché tel quel à la place de "Autre" une fois approuvé.
+Un coach peut, à l'inscription ou en modifiant son profil, taper le nom d'une
+catégorie qui n'existe pas encore (autant qu'il veut) en plus de celles déjà
+publiées. Chaque proposition crée une catégorie au statut `PENDING`,
+invisible dans l'annuaire tant qu'un administrateur ne l'a pas approuvée
+depuis `/admin/categories`. Si un autre coach (ou lui-même) propose exactement
+le même nom, il rejoint la même catégorie au lieu d'en créer une en double.
 
-### Photos de catégories
+### Photos et couleurs de catégories
 
 Par défaut, chaque catégorie affiche une icône colorée sur les cartes de
-l'accueil. Un administrateur peut uploader une vraie photo par sport depuis
-`/admin` (section "Photos des catégories") ; elle est alors utilisée à la
-place de l'icône. Stockées dans `public/uploads/categories/` (même volume
-Docker que les photos de coach, donc persistant).
+l'accueil (icône SVG pour les 14 catégories d'origine, simple pastille avec
+l'initiale pour une catégorie créée depuis l'admin). Un administrateur peut
+uploader une vraie photo, et changer le nom/la couleur, depuis
+`/admin/categories`. Les photos sont stockées dans
+`public/uploads/categories/` (même volume Docker que les photos de coach,
+donc persistant).
 
 ### Modération
 
@@ -127,9 +131,16 @@ réseau Docker, en utilisant son nom de service comme `SMTP_HOST`.
 ## Administration
 
 Rendez-vous sur `/admin` et connectez-vous avec le mot de passe défini dans
-`ADMIN_PASSWORD` (variable d'environnement, voir `.env.example`). Depuis cet
-espace : approuver/rejeter les profils en attente (et corriger le nom d'un
-sport "Autre" au passage), et uploader une photo par catégorie.
+`ADMIN_PASSWORD` (variable d'environnement, voir `.env.example`). Trois
+sections :
+
+- **Profils en attente** (`/admin`) : approuver ou rejeter les nouveaux profils coach.
+- **Catégories** (`/admin/categories`) : créer/renommer/supprimer une catégorie,
+  lui donner une couleur et une photo, et approuver/rejeter celles proposées
+  par les coachs.
+- **Utilisateurs** (`/admin/users`) : lister tous les coachs et élèves, voir le
+  détail complet d'un coach (`/admin/coachs/<id>`), modifier ses informations
+  ou supprimer un compte.
 
 Il n'y a pas de compte utilisateur admin : un seul mot de passe partagé
 protège tout l'espace via un cookie de session. Changez `ADMIN_PASSWORD` avant

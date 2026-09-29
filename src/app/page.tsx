@@ -1,10 +1,14 @@
 import Link from "next/link";
-import { BROWSABLE_SPORTS } from "@/lib/sports";
+import { getBrowsableCategories } from "@/lib/categories";
 import { CategoryCard } from "@/components/CategoryCard";
 import { ButtonLink } from "@/components/ui/Button";
 import { cardClass } from "@/lib/ui-styles";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const categories = await getBrowsableCategories();
+
   return (
     <main className="mx-auto max-w-[1600px] px-6 py-12 md:px-10 md:py-16">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
@@ -33,8 +37,8 @@ export default function Home() {
         Parcourir par sport
       </h2>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {BROWSABLE_SPORTS.map((sport) => (
-          <CategoryCard key={sport} sport={sport} />
+        {categories.map((category) => (
+          <CategoryCard key={category.id} category={category} />
         ))}
       </div>
     </main>
