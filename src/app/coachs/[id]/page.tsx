@@ -88,17 +88,12 @@ export default async function CoachPage(props: PageProps<"/coachs/[id]">) {
       )}
 
       <div className={`mt-8 p-5 ${cardClass}`}>
-        <h2 className="text-lg font-medium">Contact</h2>
-        <a
-          href={`mailto:${coach.email}`}
-          className="mt-2 block text-sm text-zinc-600 transition-colors hover:text-brand dark:text-zinc-400"
-        >
-          {coach.email}
-        </a>
-
-        <h3 className="mt-5 text-sm font-medium">
-          Envoyer un message à {coach.name}
-        </h3>
+        <h2 className="text-lg font-medium">
+          Contacter {coach.name}
+        </h2>
+        <p className="mt-1 text-sm text-zinc-500">
+          Les coordonnées du coach ne sont pas publiques : le contact passe par la messagerie.
+        </p>
         {student ? (
           <ContactForm coachId={coach.id} />
         ) : (
